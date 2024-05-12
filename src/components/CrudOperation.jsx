@@ -3,19 +3,19 @@ import React, { useEffect, useState } from 'react'
 
 export default function CrudOperation() {
 
-    const [formData,setFormData] = useState({
+    const [formData, setFormData] = useState({
 
-        name:'',
-        email :'',
-        mobile:'',
-        password:''
+        name: '',
+        email: '',
+        mobile: '',
+        password: ''
 
     });
-  let [allUser,selAlluser]=useState([])
+    let [allUser, selAlluser] = useState([])
 
 
     let formDataStore = (event) => {
-        
+
 
         let inputName = event.target.name;
         let inputValue = event.target.value;
@@ -23,7 +23,7 @@ export default function CrudOperation() {
         // console.log(inputName);
         // console.log(inputValue);
 
-        let object = {...formData};
+        let object = { ...formData };
 
         object[inputName] = inputValue;
 
@@ -35,35 +35,78 @@ export default function CrudOperation() {
 
         event.preventDefault();
         // console.log(formData);
-        axios.post(`https://wscubetech.co/form-api/save_user.php`,toFormData(formData))
-        .then((response) =>{
+        axios.post(`https://wscubetech.co/form-api/save_user.php`, toFormData(formData))
+            .then((response) => {
 
-            console.log(response.data);
-            getAllDetails()
-            setFormData(
-            {name:'',
-        email:'',
-        mobile:'',
-        password:''})
-        })
+                console.log(response.data);
+                getAllDetails()
+                setFormData(
+                    {
+                        name: '',
+                        email: '',
+                        mobile: '',
+                        password: ''
+                    })
+
+
+                // Scroll to the last record in the table
+                const table = document.getElementById('userTable');
+                if (table) {
+                    const lastRow = table.rows[table.rows.length - 1];
+                    lastRow.scrollIntoView({ behavior: "smooth" });
+                }
+
+            })
 
 
 
     }
 
-    let getAllDetails=()=>{
+    let getAllDetails = () => {
         axios.get(`https://wscubetech.co/form-api/view_user.php`)
-        .then((res)=>{
-           return res.data
-        })
-        .then((finalRes)=>{
-            selAlluser(finalRes.dataList)
-         })
-     }
+            .then((res) => {
+                return res.data
+            })
+            .then((finalRes) => {
+                // console.log(finalRes.dataList)
+                selAlluser(finalRes.dataList)
+            })
+    }
 
-    useEffect(()=>{
+    useEffect(() => {
         getAllDetails()
-     },[])
+    }, [])
+
+
+    let deleteUser = (deleteUserId) => {
+        // alert(deleteUserId);
+
+        axios.get(`https://wscubetech.co/form-api/delete_user.php?enid=${deleteUserId}`)
+            .then((response) => {
+                getAllDetails()
+            })
+
+    }
+
+    let editUserDetails = (editUserId) => {
+        // alert(editUserId)
+
+        axios.get(`https://wscubetech.co/form-api/view_user.php?editId=${editUserId}`)
+            .then((response) => {
+                console.log(response.data.dataList)
+
+                setFormData(
+                    {
+                        name: response.data.dataList.en_name,
+                        email: response.data.dataList.en_email,
+                        mobile: response.data.dataList.en_contact,
+                        password: response.data.dataList.en_password,
+                        id: response.data.dataList.en_id
+
+                    })
+
+            })
+    }
 
     return (
         <>
@@ -73,106 +116,117 @@ export default function CrudOperation() {
                         <form onSubmit={saveFomeData}>
                             <div class="flex flex-col mb-4">
                                 <label class="mb-2 font-bold text-lg text-gray-900" for="name">Name</label>
-                                <input class="border py-2 px-3 text-grey-800" type="text" name="name" value={formData.name} onChange={formDataStore}/>
+                                <input class="border py-2 px-3 text-grey-800" type="text" name="name" value={formData.name} onChange={formDataStore} />
                             </div>
 
                             <div class="flex flex-col mb-4">
                                 <label class="mb-2 font-bold text-lg text-gray-900" for="email">Email</label>
-                                <input class="border py-2 px-3 text-grey-800" type="email" name="email" value={formData.email} onChange={formDataStore}/>
+                                <input class="border py-2 px-3 text-grey-800" type="email" name="email" value={formData.email} onChange={formDataStore} />
                             </div>
                             <div class="flex flex-col mb-4">
                                 <label class="mb-2 font-bold text-lg text-gray-900" for="mobile">Mobile</label>
-                                <input class="border py-2 px-3 text-grey-800" type="text" name="mobile" value={formData.mobile} onChange={formDataStore}/>
+                                <input class="border py-2 px-3 text-grey-800" type="text" name="mobile" value={formData.mobile} onChange={formDataStore} />
                             </div>
                             <div class="flex flex-col mb-4">
                                 <label class="mb-2 font-bold text-lg text-gray-900" for="password">Password</label>
-                                <input class="border py-2 px-3 text-grey-800" type="text" name="password" value={formData.password} onChange={formDataStore}/>
+                                <input class="border py-2 px-3 text-grey-800" type="text" name="password" value={formData.password} onChange={formDataStore} />
                             </div>
-                            <button class="block bg-teal-400 hover:bg-teal-600 text-white uppercase text-lg mx-auto p-4 rounded" type="submit">Submit</button>
+                            <input class="block bg-teal-400 hover:bg-teal-600 uppercase text-lg mx-auto p-4 rounded text-dark-900" type="submit" value={formData.id === undefined ? 'Save' : 'Update'} />
                         </form>
-                        <a class="block w-full text-center no-underline mt-4 text-sm text-gray-700 hover:text-gray-900" href="/login">Already have an account?</a>
                     </div>
                 </div>
 
-                <table className="min-w-full leading-normal">
-      <thead className='text-center'>
-        <tr>
-        <th
-            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
-            Sr No.
-          </th>
-          <th
-            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
-            Name
-          </th>
-         
-          <th
-            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
-            Email
-          </th>
-          <th
-            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
-            Phone
-          </th>
-          <th
-            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
-            password
-          </th>
-          
-        </tr>
-      </thead>
-      <tbody>
-            {allUser.length>=1
-                ?
-                allUser.map((user,index)=>{
-                    return(
+                <table className="min-w-full leading-normal" id="userTable">
+                    <thead className='text-center'>
                         <tr>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
                             >
-                               {index+1}
+                                Sr No.
                             </th>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
                             >
-                                {user.en_name}
+                                Name
                             </th>
-                           
-                            <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                            >
-                                {user.en_email}
-                            </th>
-                            <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                            >
-                                {user.en_contact}
-                            </th>
-                            <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                            >
-                                {user.en_password}
-                            </th>
-                            
-                        </tr>   
-                    )
-                })
 
-                :
-                <tr>
-                    <td colSpan={6}> No Data Found </td>
-                </tr>
-            
-            }
+                            <th
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                            >
+                                Email
+                            </th>
+                            <th
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                            >
+                                Phone
+                            </th>
+                            <th
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                            >
+                                password
+                            </th>
+                            <th
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                            >
+                                Action
+                            </th>
 
-     
-      </tbody>
-        </table>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {allUser.length >= 1
+                            ?
+                            allUser.map((user, index) => {
+                                return (
+                                    <tr>
+                                        <th
+                                            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-dark-700 tracking-wider"
+                                        >
+                                            {index + 1}
+                                        </th>
+                                        <th
+                                            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-dark-700 tracking-wider"
+                                        >
+                                            {user.en_name}
+                                        </th>
+
+                                        <th
+                                            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-dark-700 tracking-wider"
+                                        >
+                                            {user.en_email}
+                                        </th>
+                                        <th
+                                            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-dark-700 tracking-wider"
+                                        >
+                                            {user.en_contact}
+                                        </th>
+                                        <th
+                                            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-dark-700 tracking-wider"
+                                        >
+                                            {user.en_password}
+                                        </th>
+                                        <th
+                                            className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-dark-700 tracking-wider"
+                                        >
+                                            <button className='bg-red-500 p-2 rounded-lg text-white' onClick={() => deleteUser(user.en_id)}>Delete</button>
+
+                                            <button className='bg-green-400 p-2 rounded-lg text-white ms-4 px-4' onClick={() => editUserDetails(user.en_id)}>Edit</button>
+                                        </th>
+
+                                    </tr>
+                                )
+                            })
+
+                            :
+                            <tr>
+                                <td colSpan={6}> No Data Found </td>
+                            </tr>
+
+                        }
+
+
+                    </tbody>
+                </table>
 
             </div>
 

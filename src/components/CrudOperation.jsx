@@ -38,7 +38,7 @@ export default function CrudOperation() {
         axios.post(`https://wscubetech.co/form-api/save_user.php`, toFormData(formData))
             .then((response) => {
 
-                console.log(response.data);
+                // console.log(response.data);
                 getAllDetails()
                 setFormData(
                     {
@@ -91,6 +91,7 @@ export default function CrudOperation() {
     let editUserDetails = (editUserId) => {
         // alert(editUserId)
 
+        // edit user by calling edit-user-API
         axios.get(`https://wscubetech.co/form-api/view_user.php?editId=${editUserId}`)
             .then((response) => {
                 console.log(response.data.dataList)
@@ -106,29 +107,59 @@ export default function CrudOperation() {
                     })
 
             })
+
+        // edit manually
+        // axios.get(`https://wscubetech.co/form-api/view_user.php`)
+        //     .then((response) => {
+        //         // console.log(response.data)
+        //         return response.data
+        //     })
+        //     .then((finalRes) => {
+
+        //         console.log(finalRes.dataList)
+
+        //         let finalUseData = finalRes.dataList.filter((users) => users.en_id == editUserId)
+        //         // console.log(finalUseData) // give this given id all data in object of array form
+        //         // console.log(finalUseData[0]) // give perticular ids object
+        //         let finalResult = finalUseData[0]
+
+        //         setFormData(
+        //             {
+        //                 name: finalResult.en_name,
+        //                 email: finalResult.en_email,
+        //                 mobile: finalResult.en_contact,
+        //                 password: finalResult.en_password,
+        //                 id: finalResult.en_id
+
+        //             })
+
+        //     })
     }
 
     return (
         <>
-            <div className='max-w-[1320px] mx-auto bg-red-200 '>
+            <div className='max-w-[1320px] mx-auto bg-white-200 '>
+
+            <h1 className='my-5 text-center font-bold text-[25px] text-red-500'>CRUD OPERATION</h1>
                 <div class="flex justify-center items-center h-screen w-full bg-blue-400">
+
                     <div class="w-1/2 bg-white rounded shadow-2xl p-8 m-4">
                         <form onSubmit={saveFomeData}>
                             <div class="flex flex-col mb-4">
-                                <label class="mb-2 font-bold text-lg text-gray-900" for="name">Name</label>
+                                <label class="mb-2 font-bold text-lg text-black-900" for="name">Name</label>
                                 <input class="border py-2 px-3 text-grey-800" type="text" name="name" value={formData.name} onChange={formDataStore} />
                             </div>
 
                             <div class="flex flex-col mb-4">
-                                <label class="mb-2 font-bold text-lg text-gray-900" for="email">Email</label>
+                                <label class="mb-2 font-bold text-lg text-black-900" for="email">Email</label>
                                 <input class="border py-2 px-3 text-grey-800" type="email" name="email" value={formData.email} onChange={formDataStore} />
                             </div>
                             <div class="flex flex-col mb-4">
-                                <label class="mb-2 font-bold text-lg text-gray-900" for="mobile">Mobile</label>
+                                <label class="mb-2 font-bold text-lg text-black-900" for="mobile">Mobile</label>
                                 <input class="border py-2 px-3 text-grey-800" type="text" name="mobile" value={formData.mobile} onChange={formDataStore} />
                             </div>
                             <div class="flex flex-col mb-4">
-                                <label class="mb-2 font-bold text-lg text-gray-900" for="password">Password</label>
+                                <label class="mb-2 font-bold text-lg text-black-900" for="password">Password</label>
                                 <input class="border py-2 px-3 text-grey-800" type="text" name="password" value={formData.password} onChange={formDataStore} />
                             </div>
                             <input class="block bg-teal-400 hover:bg-teal-600 uppercase text-lg mx-auto p-4 rounded text-dark-900" type="submit" value={formData.id === undefined ? 'Save' : 'Update'} />
@@ -136,37 +167,39 @@ export default function CrudOperation() {
                     </div>
                 </div>
 
-                <table className="min-w-full leading-normal" id="userTable">
+                <h1 className='my-5 text-center font-bold text-[25px]'>View All User Details</h1>
+
+                <table className="min-w-full leading-normal my-5 border" id="userTable">
                     <thead className='text-center'>
                         <tr>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-bold text-black-700 uppercase tracking-wider"
                             >
                                 Sr No.
                             </th>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-bold text-black-700 uppercase tracking-wider"
                             >
                                 Name
                             </th>
 
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-bold text-black-700 uppercase tracking-wider"
                             >
                                 Email
                             </th>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-bold text-black-700 uppercase tracking-wider"
                             >
                                 Phone
                             </th>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-bold text-black-700 uppercase tracking-wider"
                             >
                                 password
                             </th>
                             <th
-                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black-700 uppercase tracking-wider"
+                                className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-bold text-black-700 uppercase tracking-wider"
                             >
                                 Action
                             </th>
